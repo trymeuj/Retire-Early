@@ -1,5 +1,8 @@
 import { OutcomeFactors, OutcomeScores, ScoreValue, LocationOption, FamilyContextOption, LifestyleOption } from '@/types'
 
+// Type for score adjustments (relative changes, not absolute values)
+type ScoreAdjustments = Partial<Record<keyof OutcomeScores, number>>
+
 // Base scores for each location type
 const locationScores: Record<string, Partial<OutcomeScores>> = {
   'coastal-town': {
@@ -47,7 +50,7 @@ const locationScores: Record<string, Partial<OutcomeScores>> = {
 }
 
 // Adjustments based on family context
-const familyAdjustments: Record<string, Partial<OutcomeScores>> = {
+const familyAdjustments: Record<string, ScoreAdjustments> = {
   'solo': {
     costOfLiving: -1, // Cheaper (single person)
     socialLife: -1, // More isolated
@@ -72,7 +75,7 @@ const familyAdjustments: Record<string, Partial<OutcomeScores>> = {
 }
 
 // Adjustments based on lifestyle
-const lifestyleAdjustments: Record<string, Partial<OutcomeScores>> = {
+const lifestyleAdjustments: Record<string, ScoreAdjustments> = {
   'simple-quiet': {
     paceOfLife: -1, // Slower
     socialLife: -1, // More isolated
@@ -104,14 +107,14 @@ function clampScore(score: number): ScoreValue {
   return score as ScoreValue
 }
 
-function applyAdjustments(base: Partial<OutcomeScores>, adjustments: Partial<OutcomeScores>): Partial<OutcomeScores> {
+function applyAdjustments(base: Partial<OutcomeScores>, adjustments: ScoreAdjustments): Partial<OutcomeScores> {
   const result: Partial<OutcomeScores> = { ...base }
   
   Object.keys(adjustments).forEach((key) => {
     const adjustmentKey = key as keyof OutcomeScores
     const baseValue = base[adjustmentKey] || 3
     const adjustment = adjustments[adjustmentKey] || 0
-    result[adjustmentKey] = clampScore(baseValue + (adjustment as number))
+    result[adjustmentKey] = clampScore(baseValue + adjustment)
   })
   
   return result
