@@ -5,11 +5,13 @@ import { generateCombinations } from '@/data/combinations'
 import CombinationCard from '@/components/CombinationCard'
 import DimensionSection from '@/components/DimensionSection'
 import OutcomeVisualization from '@/components/OutcomeVisualization'
+import { Introduction } from '@/components/Introduction'
 import { locationOptions, familyContextOptions, lifestyleOptions } from '@/data/options'
 import { generateOutcome } from '@/data/outcomes'
 import { UserSelections, LocationOption, FamilyContextOption, LifestyleOption } from '@/types'
 
 export default function Home() {
+  const [showHero, setShowHero] = useState(true)
   const combinations = generateCombinations()
   const [selections, setSelections] = useState<UserSelections>({
     location: null,
@@ -35,10 +37,14 @@ export default function Home() {
     selections.lifestyle
   )
 
-  const hasSelections = selections.location && selections.familyContext && selections.lifestyle
+  const hasSelections = !!(selections.location && selections.familyContext && selections.lifestyle)
+
+  if (showHero) {
+    return <Introduction onStart={() => setShowHero(false)} />
+  }
 
   return (
-    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-amber-50 via-rose-50 to-teal-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
